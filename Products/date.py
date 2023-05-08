@@ -1,10 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 '''
 https://docs.python.org/3/library/datetime.html#
-timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0)
 
+class datetime.datetime(year, month, day, hour=0, minute=0, second=0, microsecond=0, tzinfo=None, *, fold=0)
 Attributes (datetime) :-
 min			The minimum representable DateTime
 max			The maximum representable DateTime
@@ -45,6 +45,15 @@ utcoffset()			Returns the UTC offset
 utcnow()			Return current UTC date and time
 weekday()			Returns the day of the week as integer where Monday is 0 and Sunday is 6
 
+class datetime.timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0)
+Attributes (timedelta) :-
+days			Returns days
+microseconds	Returns microseconds
+seconds 		Returns seconds
+max 			Returns maximum positive timedelta value
+min 			Returns most negative timedelta value
+resolution		Returns smallest possible difference between timedelta values
+
 Operations (timedelta) :-
 Addition (+)		Adds and returns two timedelta objects
 Subtraction (-)		Subtracts and returns two timedelta objects
@@ -58,11 +67,45 @@ abs(timedelta)		Returns the +(timedelta) if timedelta.days > 1=0 else returns -(
 str(timedelta)		Returns a string in the form (+/-) day[s],  HH:MM:SS.UUUUUU
 repr(timedelta)		Returns the string representation in the form of the constructor call
 
+Class Functions (timedelta) :-
+total_seconds()		Returns duration in seconds
 '''
 
 
-class Date(datetime):
-	def __init__(self, ):
-		# *args = non-keyworded arguments
-		# **kwargs = keyworded arguments
-		super(Date, self).__init__(*args, **kwargs)
+class Date:
+	def __init__(self, year=0, month=0, day=0, hour=0, minute=0, second=0, microsecond=0, week=0, millisecond=0, isDelta=False):	
+		self.delta = timedelta(days=day, seconds=second, microseconds=microsecond, milliseconds=millisecond, minutes=minute, hours=hour, weeks=week)
+		
+		self.year = year 
+		self.month = month 
+
+
+	def __str__(self):
+		dt = datetime.min + self.delta 
+		day = (dt.day - 1)
+		month = (dt.month - 1) + self.month
+		year = (dt.year - 1) + self.year 
+		return f'{year:04d}-{month:02d}-{day:02d} {dt.hour:02d}:{dt.minute:02d}:{dt.second:02d}.{dt.microsecond:06d}'
+
+	def __repr__(self):
+		dt = datetime.min + self.delta 
+		day = (dt.day - 1)
+		month = (dt.month - 1) + self.month
+		year = (dt.year - 1) + self.year 
+		return f'Date(year={year}, month={month}, day={day}, hour={dt.hour}, minute={dt.minute}, second={dt.second}, microsecond={dt.microsecond})'
+
+	def __add__(self, other):
+		newDt = self.delta + other.delta + datetime.min 
+		newDay = (newDt.day - 1)
+		newMonth = (newDt.month - 1) + self.month + other.month
+		newYear, newMonth = (newMonth-1)//12, (newMonth%12 or 12)
+		newYear += (newDt.year - 1) + self.year + other.year 
+		return Date(newYear, newMonth, newDay, newDt.hour, newDt.minute, newDt.second, newDt.microsecond)
+
+	def yearFraction(self):
+
+		return 
+
+	def weeks(self):
+		pass
+
